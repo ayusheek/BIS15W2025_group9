@@ -39,7 +39,7 @@ movie_join <- inner_join(movies1, movies2, by="title")
 
 Cleaning the Data
 ```{r}
-bollywood2 <- movie_join %>% 
+bollywood <- movie_join %>% 
   select(-genre.y, -actors, -directors, -imdb_id) %>% #removing duplicate columns
   rename(genre=genre.x) %>% 
   separate(release_date, into=c("date", "month", "year"), sep=" ") %>% #separate the date column
