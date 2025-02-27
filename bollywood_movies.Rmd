@@ -11,15 +11,16 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(janitor)
+library(naniar)
 ```
 
 
-Load Data
+Load Data:
 ```{r}
 movies1 <- read_csv("bollywood.csv") %>% 
   clean_names() %>% 
   rename(title=movie_name) %>% 
-  mutate(across(where(is.character), tolower))
+  mutate(across(where(is.character), tolower)) #changing all characters to lowercase
 ```
 
 ```{r}
@@ -28,8 +29,22 @@ movies2 <- read_csv("bollywood_hits.csv") %>%
   mutate(across(where(is.character), tolower))
 ```
 
-Join Data
+Join Data:
 ```{r}
-bollywood <- inner_join(movies1, movies1, by="title")
+movie_join <- inner_join(movies1, movies2, by="title")
+```
+
+
+
+
+Cleaning the Data
+```{r}
+bollywood2 <- movie_join %>% 
+  select(-genre.y, -actors, -directors, -imdb_id) %>% #removing duplicate columns
+  rename(genre=genre.x) %>% 
+  separate(release_date, into=c("date", "month", "year"), sep=" ") %>% #separate the date column
+  replace_with_na_all(condition = ~.x == "n/a") %>% 
+  select(-release_year) #removing duplicate column
+  
 ```
 
