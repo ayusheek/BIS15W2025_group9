@@ -12,6 +12,13 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(janitor)
 library(naniar)
+library(ggplot2)
+library(RColorBrewer)
+```
+
+
+```{r}
+options(scipen=999) #turning off scientific notation
 ```
 
 
@@ -36,7 +43,6 @@ movie_join <- inner_join(movies1, movies2, by="title")
 
 
 
-
 Cleaning the Data
 ```{r}
 bollywood <- movie_join %>% 
@@ -44,7 +50,77 @@ bollywood <- movie_join %>%
   rename(genre=genre.x) %>% 
   separate(release_date, into=c("date", "month", "year"), sep=" ") %>% #separate the date column
   replace_with_na_all(condition = ~.x == "n/a") %>% 
-  select(-release_year) #removing duplicate column
+  select(-release_year) #removing duplicate year column
   
 ```
 
+Assessing data:
+
+```{r}
+summary(bollywood)
+```
+
+```{r}
+miss_var_summary(bollywood)
+```
+
+
+
+
+
+#Change Over Time
+
+1. How does the number of movies released change over the years?
+```{r}
+bollywood %>% 
+  filter(year != "NA") %>% 
+  ggplot(aes(x=as.factor(year), fill=year))+
+  geom_bar()+
+  scale_fill_brewer(palette="RdYlGn")+
+  labs(title="Movies per Year", x="Year", y="Number Movies")+
+  theme(plot.title = element_text(hjust=0.5, size=15))
+```
+2011 has highest number of movies and 2006 has the lowest
+
+2. How does the proportion of each genre change over time
+```{r}
+bollywood %>% 
+  filter(year != "NA") %>% 
+  ggplot(aes(x=as.factor(year), fill=genre))+
+  geom_bar()+
+  scale_fill_brewer(palette="RdYlGn")+
+  labs(title="Movies per Year", x="Year", y="Number Movies")+
+  theme(plot.title = element_text(hjust=0.5, size=15))
+```
+
+
+```{r}
+bollywood %>% 
+  filter(year != "NA") %>% 
+  filter(!genre %in% c("suspense", "adult", "masala", "animation")) %>% 
+  group_by(year, genre) %>%
+  summarize(n=n()) %>% 
+  ggplot(aes(x=as.factor(year), group=genre, y=n, color=genre))+
+  geom_point()+
+  geom_line()
+```
+drama peaked in 2011 when the most movies came out
+all genres went down in 2006 (lowest movies produced)
+
+3. Was the drop in movies in 2006 related to the number of new directors?
+```{r}
+bollywood_newdir <- bollywood %>% 
+  mutate(new_director=case_when(new_director=="yes" ~1, 
+                                new_director=="no" ~0))
+```
+
+
+```{r}
+bollywood_newdir %>% 
+  filter(year!="NA") %>% 
+  group_by(year) %>% 
+  summarize(sum=sum(new_director)) %>% 
+  ggplot(aes(x=as.factor(year), y=sum))+
+  geom_col()
+```
+2006 is the year with the fewest directors entering the field, 2011 is the year with the highest new directors entering the field
