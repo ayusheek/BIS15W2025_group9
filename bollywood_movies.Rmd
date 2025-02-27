@@ -30,6 +30,6 @@ movies2 <- read_csv("bollywood_hits.csv") %>%
 
 Join Data
 ```{r}
-bolly
+bollywood <- inner_join(movies1, movies1, by="title")
 ```
 
