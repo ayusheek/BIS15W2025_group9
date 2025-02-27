@@ -15,6 +15,6 @@ library(tidyverse)
 
 Load Data
 ```{r}
-movies <- read_csv("/Users/hirva/Desktop/BIS15W2025_hshah/bollywood_movies_data/movies.csv")
+movies1 <- read_csv("bollywood.csv")
 ```
 
