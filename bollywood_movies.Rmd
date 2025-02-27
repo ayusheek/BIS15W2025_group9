@@ -10,11 +10,26 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(tidyverse)
+library(janitor)
 ```
 
 
 Load Data
 ```{r}
-movies1 <- read_csv("bollywood.csv")
+movies1 <- read_csv("bollywood.csv") %>% 
+  clean_names() %>% 
+  rename(title=movie_name) %>% 
+  mutate(across(where(is.character), tolower))
+```
+
+```{r}
+movies2 <- read_csv("bollywood_hits.csv") %>% 
+  clean_names() %>% 
+  mutate(across(where(is.character), tolower))
+```
+
+Join Data
+```{r}
+bolly
 ```
 
