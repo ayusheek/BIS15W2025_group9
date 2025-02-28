@@ -98,7 +98,7 @@ bollywood %>%
 2011 is the year with the highest new directors entering the field; corresponds to most movies released
 
 
-3. How does revenue change over time?
+3. How does revenue (movie success) change over time?
 ```{r}
 bollywood %>% 
   filter(year != "NA") %>% 
