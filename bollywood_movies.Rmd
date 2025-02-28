@@ -81,7 +81,9 @@ bollywood %>%
   labs(title="Movies per Year", x="Year", y="Number Movies")+
   theme(plot.title = element_text(hjust=0.5, size=15))
 ```
+Overall general increase in number of movies
 2011 has highest number of movies and 2006 has the lowest
+
 
 2. Could the drop in movies in 2006 be related to the number of new directors?
 ```{r}
@@ -96,8 +98,19 @@ bollywood %>%
 2011 is the year with the highest new directors entering the field; corresponds to most movies released
 
 
-3. Did those two years also have the highest and lowest average revenues?
+3. How does revenue change over time?
+```{r}
+bollywood %>% 
+  filter(year != "NA") %>% 
+  group_by(year) %>%
+  summarize(avg_rev=mean(revenue_inr)) %>% 
+  ggplot(aes(x=year, y=avg_rev))+
+  geom_col()
+```
+Average revenue is generally increasing over time but there is a drop from 2009-2011
 
+
+4. How does the distribution of revenue change over time?
 ```{r}
 bollywood %>% 
   filter(year != "NA") %>% 
@@ -105,47 +118,65 @@ bollywood %>%
   geom_boxplot()
 ```
 Number of high outliers increase over time
-Hard to see change in average revenue due to scaling of y axis
+Outliers are extremely high from 2012-2014
 
+
+5. From 2012-2014, how does the revenue distribution vary by genre?
 ```{r}
 bollywood %>% 
-  filter(year != "NA") %>% 
-  group_by(year) %>%
-  summarize(avg_rev=mean(revenue_inr)) %>% 
-  ggplot(aes(x=year, y=avg_rev))+
-  geom_point()
+  filter(year %in% c(2012, 2013, 2014)) %>% 
+  filter(!genre %in% c("adult", "suspense","fantasy")) %>% 
+  ggplot(aes(x=genre, y=revenue_inr/10000, fill=genre))+
+  geom_boxplot()+
+  facet_wrap(~year)+
+  scale_fill_brewer(palette="RdYlGn")+
+  coord_flip()+
+  theme(axis.text.x=element_text(angle=20))+
+  labs(title="Distribution of Revenue", y="Revenue/1000 in Rupees", x="genre")
+  
 ```
-Average revenue is generally increasing over time but there is a drop from 2009-2011
+Masala movies revenue increased across the 3 years
+From 2012-2014 the range of success of action movies increased
 
-
-
-4. How do genres of movies released change over the years?
+6. How did the number of masala movies change from 2012-2014
 ```{r}
 bollywood %>% 
-  filter(year != "NA") %>% 
-  group_by(year, genre) %>%
-  summarize(n=n()) %>% 
-  ggplot(aes(x=as.factor(year), group=genre, y=n, color=genre))+
-  geom_point()+
-  geom_line()
-```
-drama had a huge peak in 2011 (almost 20 more movies compared to 2010)
-suspense rose from 2010-2013
-
-
-5. Look at genres of top 10 high earning movies each year. Is the proportion of drama movies increasing leading up to 2011?
-```{r}
-bollywood %>%
-  filter(year != "NA") %>% 
+  filter(year %in% c(2012, 2013, 2014)) %>% 
+  filter(genre=="masala") %>% 
   group_by(year) %>% 
-  top_n(10, revenue_inr) %>% 
-  ggplot(aes(x=year, fill=genre))+
-  geom_bar()+
-  scale_fill_brewer(palette="RdYlGn")
+  summarize(n_masala=n())
 ```
-Proportion of drama movies is not increasing leading up to 2011. But drama movies make up half of the top 10 highest revenue films in 2011.
+Only 2 masala movies in 2013 and 2012 but they did really well
+
+7. What were the names of these movies?
+```{r}
+bollywood %>% 
+  filter(year %in% c(2013, 2012)) %>% 
+  filter(genre=="masala") %>% 
+  select(title, lead_star, year)
+```
+
+8. Were these years ajay devgn's or shahrukh khan's peak?
+```{r}
+bollywood %>% 
+  filter(lead_star=="ajay devgn" | lead_star=="shahrukh khan") %>% 
+  group_by(year, lead_star) %>% 
+  summarize(avg_rev=mean(revenue_inr)) %>% 
+  ggplot(aes(x=year, y=avg_rev, group=lead_star, color=lead_star))+
+  geom_point()+
+  geom_line()+
+  labs(title="Avg Revenue Over Time", x="Year", y="Average Revenue", color="Actor")
+  
+```
 
 
+#Hits vs. Flops
+
+
+
+
+
+#Old vs. New Bollywood
 
 
 
