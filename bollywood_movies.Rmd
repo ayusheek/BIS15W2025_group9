@@ -69,7 +69,7 @@ miss_var_summary(bollywood)
 
 
 
-#Change Over Time
+##Change Over Time
 
 1. How does the number of movies released change over the years?
 ```{r}
@@ -146,20 +146,20 @@ bollywood %>%
   group_by(year) %>% 
   summarize(n_masala=n())
 ```
-Only 2 masala movies in 2013 and 2012 but they did really well
+Only 2 masala movies in 2013 and 2014 but they did really well
 
 7. What were the names of these movies?
 ```{r}
 bollywood %>% 
-  filter(year %in% c(2013, 2012)) %>% 
+  filter(year %in% c(2013, 2014)) %>% 
   filter(genre=="masala") %>% 
   select(title, lead_star, year)
 ```
 
-8. Were these years ajay devgn's or shahrukh khan's peak?
+8. Were these years the peak of ajay devgn, ranveer singh, and shahrukh khan's careers?
 ```{r}
 bollywood %>% 
-  filter(lead_star=="ajay devgn" | lead_star=="shahrukh khan") %>% 
+  filter(lead_star=="ajay devgn" | lead_star=="shahrukh khan"| lead_star=="ranveer singh") %>% 
   group_by(year, lead_star) %>% 
   summarize(avg_rev=mean(revenue_inr)) %>% 
   ggplot(aes(x=year, y=avg_rev, group=lead_star, color=lead_star))+
