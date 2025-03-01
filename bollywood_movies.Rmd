@@ -156,7 +156,7 @@ bollywood %>%
   select(title, lead_star, year)
 ```
 
-8. Were these years the peak of ajay devgn, ranveer singh, and shahrukh khan's careers?
+8. What did ajay devgn, ranveer singh, and shahrukh khan's success look like over the years?
 ```{r}
 bollywood %>% 
   filter(lead_star=="ajay devgn" | lead_star=="shahrukh khan"| lead_star=="ranveer singh") %>% 
@@ -168,6 +168,9 @@ bollywood %>%
   labs(title="Avg Revenue Over Time", x="Year", y="Average Revenue", color="Actor")
   
 ```
+Within 2005-2014:
+ajay devgun and shah rukh khan: their success peaked in 2014
+ranveer singh had just entered the industry in 2013
 
 
 #Hits vs. Flops
