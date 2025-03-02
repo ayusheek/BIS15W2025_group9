@@ -163,7 +163,7 @@ bollywood %>%
 ```
 
 
-8. What did ajay devgn, ranveer singh, and shahrukh khan's success look like over the years?
+8.  How did the success of the lead actors involved in the masala movies from Q7 change over time?
 ```{r}
 bollywood %>% 
   filter(lead_star=="ajay devgn" | lead_star=="shahrukh khan"| lead_star=="ranveer singh") %>% 
