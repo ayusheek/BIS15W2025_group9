@@ -75,9 +75,8 @@ miss_var_summary(bollywood)
 ```{r}
 bollywood %>% 
   filter(year != "NA") %>% 
-  ggplot(aes(x=as.factor(year), fill=year))+
-  geom_bar()+
-  scale_fill_brewer(palette="RdYlGn")+
+  ggplot(aes(x=as.factor(year)))+
+  geom_bar(fill="skyblue", color="black")+
   labs(title="Movies per Year", x="Year", y="Number Movies")+
   theme(plot.title = element_text(hjust=0.5, size=15))
 ```
@@ -92,7 +91,9 @@ bollywood %>%
   group_by(year) %>% 
   summarize(n_uniq=n_distinct(director))%>% 
   ggplot(aes(x=as.factor(year), y=n_uniq))+
-  geom_col()
+  geom_col(fill="skyblue", color="black")+
+  labs(title="New Directors per Year", x="Year", y="Number of New Directors")+
+  theme(plot.title = element_text(hjust=0.5, size=15))
 ```
 2006 is the year with the fewest directors entering the field; corresponds to fewest movies released
 2011 is the year with the highest new directors entering the field; corresponds to most movies released
@@ -105,7 +106,9 @@ bollywood %>%
   group_by(year) %>%
   summarize(avg_rev=mean(revenue_inr)) %>% 
   ggplot(aes(x=year, y=avg_rev))+
-  geom_col()
+  geom_col(fill="skyblue", color="black")+
+  labs(title="Average Revenue over Time", x="Year", y="Average Revenue")+
+  theme(plot.title=element_text(hjust=0.5, size=15))
 ```
 Average revenue is generally increasing over time but there is a drop from 2009-2011
 
@@ -115,13 +118,16 @@ Average revenue is generally increasing over time but there is a drop from 2009-
 bollywood %>% 
   filter(year != "NA") %>% 
   ggplot(aes(x=year, y=revenue_inr))+
-  geom_boxplot()
+  geom_boxplot(fill="skyblue")+
+  labs(title="Revenue per Year", x="Year", y="Revenue")+
+  theme(plot.title=element_text(hjust=0.5, size=15))
+  
 ```
 Number of high outliers increase over time
 Outliers are extremely high from 2012-2014
 
 
-5. From 2012-2014, how does the revenue distribution vary by genre?
+5. From 2012-2014, how does the revenue range vary by genre?
 ```{r}
 bollywood %>% 
   filter(year %in% c(2012, 2013, 2014)) %>% 
@@ -132,11 +138,11 @@ bollywood %>%
   scale_fill_brewer(palette="RdYlGn")+
   coord_flip()+
   theme(axis.text.x=element_text(angle=20))+
-  labs(title="Distribution of Revenue", y="Revenue/1000 in Rupees", x="genre")
+  labs(title="Revenue Range over Time", y="Revenue x 10^-3 in Rupees", x="Genre")
   
 ```
-Masala movies revenue increased across the 3 years
-From 2012-2014 the range of success of action movies increased
+Masala movies revenue increased significantly across the 3 years
+Range in revenue of action movies increased a lot in 2014
 
 6. How did the number of masala movies change from 2012-2014
 ```{r}
@@ -156,6 +162,7 @@ bollywood %>%
   select(title, lead_star, year)
 ```
 
+
 8. What did ajay devgn, ranveer singh, and shahrukh khan's success look like over the years?
 ```{r}
 bollywood %>% 
@@ -165,7 +172,8 @@ bollywood %>%
   ggplot(aes(x=year, y=avg_rev, group=lead_star, color=lead_star))+
   geom_point()+
   geom_line()+
-  labs(title="Avg Revenue Over Time", x="Year", y="Average Revenue", color="Actor")
+  labs(title="Avg Revenue Over Time", x="Year", y="Average Revenue", color="Actor")+
+  theme(theme(plot.title=element_text(hjust=0.5, size=15)))
   
 ```
 Within 2005-2014:
