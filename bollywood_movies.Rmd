@@ -181,6 +181,64 @@ ranveer singh had just entered the industry in 2013
 
 #Old vs. New Bollywood
 
+```{r}
+names(bollywood)
+```
+
+```{r}
+write.table(bollywood, "bollywood.txt", sep = "\t", row.names = FALSE)
+```
+
+
+```{r}
+write.csv(bollywood, "bollywood.csv", row.names = FALSE)
+```
+
+1. How many movies belong to "Old Bollywood" vs "New Bollywood"
+```{r}
+bollywood_era <- bollywood %>% 
+  mutate(bollywood_era = case_when(
+    year >= 2005 & year <= 2009 ~ "Old Bollywood",
+    year >= 2010 & year <= 2014 ~ "New Bollywood",
+    TRUE ~ "Other"
+  )) %>% 
+  group_by(bollywood_era) %>% 
+  summarise(count=n())
+```
+
+
+```{r}
+bollywood_era %>%
+  count(bollywood_era) %>%
+  ggplot(aes(x = bollywood_era, y = n, fill = bollywood_era)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  labs(title = "Number of Movies in Old vs. New Bollywood", x = "Bollywood Era", y = "Number of Movies") +
+  theme_minimal() +
+  scale_fill_manual(values = c("Old Bollywood" = "blue", "New Bollywood" = "red")) +
+  theme(legend.position = "none", text = element_text(size = 12))
+```
+```{r}
+bollywood_eras <- bollywood %>% 
+  mutate(era=case_when(year<=2009 ~"old",
+                       year>2009 ~"new"))
+```
+
+2. What was the average revenue of movies in Old Bollywood vs New Bollywood?
+```{r}
+bollywood_eras %>%
+  group_by(era) %>% 
+  filter(era!="NA") %>% 
+  ggplot(aes(x = era, y = revenue_inr, fill = era)) +
+  geom_boxplot(outlier.color = "black", outlier.shape = 16) +
+  labs(title = "Revenue Comparison: Old vs. New Bollywood", x = "Bollywood Era", y = "Revenue (INR)") +
+  theme_minimal() +
+  scale_fill_manual(values = c("Old Bollywood" = "blue", "New Bollywood" = "red")) +
+  theme(legend.position = "none", text = element_text(size = 12))
+```
+
+```{r}
+write.csv(bollywood_eras, "bollywood_eras.csv", row.names = FALSE)
+```
 
 
 
