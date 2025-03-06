@@ -277,10 +277,6 @@ ui <- fluidPage(
                 "Select Y Variable", 
                 choices = c("hit_flop", "number_of_screens", "revenue_inr", "budget_inr"), 
                 selected = "hit_flop"),
-  selectInput("x",
-              "Select year variable",
-              choices=c(),
-              selected="")
   
   plotOutput("plot", width="500px", height="400px")
 )
