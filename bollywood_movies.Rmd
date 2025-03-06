@@ -2,7 +2,7 @@
 title: "Bollywood Movies"
 output: html_document
 date: "2025-02-20"
-names: Hirva Shah, Ayushee Khatri, Isha Sama
+names: HS, AK, IS
 ---
 
 ```{r setup, include=FALSE}
@@ -25,8 +25,9 @@ options(scipen=999) #turning off scientific notation
 
 Load Data:
 ```{r}
-movies1 <- read_csv("bollywood.csv") %>% 
+movies1 <- read_csv("movies1.csv") %>% 
   clean_names() %>% 
+  rename(title=movie_name) %>% 
   mutate(across(where(is.character), tolower)) #changing all characters to lowercase
 ```
 
@@ -106,7 +107,7 @@ bollywood %>%
   summarize(avg_rev=mean(revenue_inr)) %>% 
   ggplot(aes(x=year, y=avg_rev))+
   geom_col(fill="skyblue", color="black")+
-  labs(title="Average Revenue over Time", x="Year", y="Average Revenue")+
+  labs(title="Average Revenue over Time", x="Year", y="Average Revenue in Rupees")+
   theme(plot.title=element_text(hjust=0.5, size=15))
 ```
 Average revenue is generally increasing over time but there is a drop from 2009-2011
@@ -118,7 +119,7 @@ bollywood %>%
   filter(year != "NA") %>% 
   ggplot(aes(x=year, y=revenue_inr))+
   geom_boxplot(fill="skyblue")+
-  labs(title="Revenue per Year", x="Year", y="Revenue")+
+  labs(title="Revenue per Year", x="Year", y="Revenue in Rupees")+
   theme(plot.title=element_text(hjust=0.5, size=15))
   
 ```
@@ -137,7 +138,7 @@ bollywood %>%
   scale_fill_brewer(palette="RdYlGn")+
   coord_flip()+
   theme(axis.text.x=element_text(angle=20))+
-  labs(title="Revenue Range over Time", y="Revenue x 10^-3 in Rupees", x="Genre")
+  labs(title="Revenue Range over Time", y="Revenue x 10^-3 (Rupees)", x="Genre")
   
 ```
 Masala movies revenue increased significantly across the 3 years
@@ -245,7 +246,7 @@ bollywood_eras <- bollywood %>%
                        year>2009 ~"new"))
 ```
 
-2. How does the average revenue of movies compare between the old and new Bollywood eras?
+2. What was the average revenue of movies in Old Bollywood vs New Bollywood?
 ```{r}
 bollywood_eras %>%
   group_by(era) %>% 
@@ -262,43 +263,31 @@ bollywood_eras %>%
 write.csv(bollywood_eras, "bollywood_eras.csv", row.names = FALSE)
 ```
 
-```{r}
-revenue_comparison <- bollywood_eras %>%
-    group_by(era) %>%
-    summarise(avg_revenue = mean(revenue_inr, na.rm = TRUE))
-```
-
-```{r}
-filter(eras)
-ggplot(revenue_comparison, aes(x = era, y = avg_revenue, fill = era)) +
-    geom_bar(stat = "identity") +
-    labs(title = "Average Revenue Comparison: Old vs New Bollywood",
-         x = "Era",
-         y = "Average Revenue (INR)") +
-    theme_minimal()
-```
-```{r}
-bollywood_erasclean <- bollywood_eras %>% 
-  filter(!is.na(revenue_inr), !is.na(era))
-```
 
 
 
-THIS IS GOOD:
-```{r}
-revenue_comparison <- bollywood_erasclean %>%
-    group_by(era) %>%
-    summarise(avg_revenue = mean(revenue_inr, na.rm = TRUE))
-```
+
+## Shiny App
 
 ```{r}
-ggplot(revenue_comparison, aes(x = era, y = avg_revenue, fill = era)) +
-    geom_bar(stat = "identity", color = "black", width = 0.5) +
-    scale_fill_manual(values = c("old" = "steelblue", "new" = "red")) +
-    labs(title = "Average Revenue Comparison: Old vs. New Bollywood",
-         x = "Era",
-         y = "Average Revenue (INR)") +
-    theme_minimal() +
-    theme(text = element_text(size = 14), legend.position = "none")
+library(shiny)
+
+ui <- fluidPage(
+  selectInput("y", 
+                "Select Y Variable", 
+                choices = c("hit_flop", "number_of_screens", "revenue_inr", "budget_inr"), 
+                selected = "hit_flop"),
+  
+  plotOutput("plot", width="500px", height="400px")
+)
+
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    
+  })
+  
+}
+
+shinyApp(ui, server)
 ```
 
