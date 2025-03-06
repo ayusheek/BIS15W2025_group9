@@ -25,7 +25,7 @@ options(scipen=999) #turning off scientific notation
 
 Load Data:
 ```{r}
-movies1 <- read_csv("bollywood.csv") %>% 
+movies1 <- read_csv("movies1.csv") %>% 
   clean_names() %>% 
   rename(title=movie_name) %>% 
   mutate(across(where(is.character), tolower)) #changing all characters to lowercase
@@ -264,4 +264,25 @@ write.csv(bollywood_eras, "bollywood_eras.csv", row.names = FALSE)
 ```
 
 
+
+
+
+## Shiny App
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  selectInput("y", 
+                "Select Y Variable", 
+                choices = c("hit_flop.y", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
+                selected = "bill_length_mm"),
+)
+
+server <- function(input, output, session) {
+  
+}
+
+shinyApp(ui, server)
+```
 
