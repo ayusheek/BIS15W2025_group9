@@ -2,7 +2,7 @@
 title: "Bollywood Movies"
 output: html_document
 date: "2025-02-20"
-names: HS, AK, IS
+names: Hirva Shah, Ayushee Khatri, Isha Sama
 ---
 
 ```{r setup, include=FALSE}
@@ -27,7 +27,6 @@ Load Data:
 ```{r}
 movies1 <- read_csv("bollywood.csv") %>% 
   clean_names() %>% 
-  rename(title=movie_name) %>% 
   mutate(across(where(is.character), tolower)) #changing all characters to lowercase
 ```
 
@@ -246,7 +245,7 @@ bollywood_eras <- bollywood %>%
                        year>2009 ~"new"))
 ```
 
-2. What was the average revenue of movies in Old Bollywood vs New Bollywood?
+2. How does the average revenue of movies compare between the old and new Bollywood eras?
 ```{r}
 bollywood_eras %>%
   group_by(era) %>% 
@@ -263,5 +262,43 @@ bollywood_eras %>%
 write.csv(bollywood_eras, "bollywood_eras.csv", row.names = FALSE)
 ```
 
+```{r}
+revenue_comparison <- bollywood_eras %>%
+    group_by(era) %>%
+    summarise(avg_revenue = mean(revenue_inr, na.rm = TRUE))
+```
 
+```{r}
+filter(eras)
+ggplot(revenue_comparison, aes(x = era, y = avg_revenue, fill = era)) +
+    geom_bar(stat = "identity") +
+    labs(title = "Average Revenue Comparison: Old vs New Bollywood",
+         x = "Era",
+         y = "Average Revenue (INR)") +
+    theme_minimal()
+```
+```{r}
+bollywood_erasclean <- bollywood_eras %>% 
+  filter(!is.na(revenue_inr), !is.na(era))
+```
+
+
+
+THIS IS GOOD:
+```{r}
+revenue_comparison <- bollywood_erasclean %>%
+    group_by(era) %>%
+    summarise(avg_revenue = mean(revenue_inr, na.rm = TRUE))
+```
+
+```{r}
+ggplot(revenue_comparison, aes(x = era, y = avg_revenue, fill = era)) +
+    geom_bar(stat = "identity", color = "black", width = 0.5) +
+    scale_fill_manual(values = c("old" = "steelblue", "new" = "red")) +
+    labs(title = "Average Revenue Comparison: Old vs. New Bollywood",
+         x = "Era",
+         y = "Average Revenue (INR)") +
+    theme_minimal() +
+    theme(text = element_text(size = 14), legend.position = "none")
+```
 
