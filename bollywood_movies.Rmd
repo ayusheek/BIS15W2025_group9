@@ -275,11 +275,20 @@ library(shiny)
 ui <- fluidPage(
   selectInput("y", 
                 "Select Y Variable", 
-                choices = c("hit_flop.y", "bill_depth_mm", "flipper_length_mm", "body_mass_g"), 
-                selected = "bill_length_mm"),
+                choices = c("hit_flop", "number_of_screens", "revenue_inr", "budget_inr"), 
+                selected = "hit_flop"),
+  selectInput("x",
+              "Select year variable",
+              choices=c(),
+              selected="")
+  
+  plotOutput("plot", width="500px", height="400px")
 )
 
 server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    
+  })
   
 }
 
