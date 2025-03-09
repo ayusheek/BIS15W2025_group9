@@ -76,7 +76,7 @@ miss_var_summary(bollywood)
 bollywood %>% 
   filter(year != "NA") %>% 
   ggplot(aes(x=as.factor(year)))+
-  geom_bar(fill="skyblue", color="black")+
+  geom_bar(fill="violet", color="black")+
   labs(title="Movies per Year", x="Year", y="Number Movies")+
   theme(plot.title = element_text(hjust=0.5, size=15))
 ```
@@ -92,7 +92,7 @@ bollywood %>%
   group_by(year) %>% 
   summarize(n_uniq=n_distinct(director))%>% 
   ggplot(aes(x=as.factor(year), y=n_uniq))+
-  geom_col(fill="year", color="black")+
+  geom_col(fill="violet", color="black")+
   labs(title="New Directors per Year", x="Year", y="Number of New Directors")+
   theme(plot.title = element_text(hjust=0.5, size=15))
 ```
@@ -107,7 +107,7 @@ bollywood %>%
   group_by(year) %>%
   summarize(avg_rev=mean(revenue_inr)) %>% 
   ggplot(aes(x=year, y=avg_rev))+
-  geom_col(fill="skyblue", color="black")+
+  geom_col(fill="violet", color="black")+
   labs(title="Average Revenue over Time", x="Year", y="Average Revenue (INR)")+
   theme(plot.title=element_text(hjust=0.5, size=15))
 ```
@@ -119,7 +119,7 @@ Average revenue is generally increasing over time but there is a drop from 2009-
 bollywood %>% 
   filter(year != "NA") %>% 
   ggplot(aes(x=year, y=revenue_inr))+
-  geom_boxplot(fill="skyblue")+
+  geom_boxplot(fill="violet")+
   labs(title="Revenue per Year", x="Year", y="Revenue (INR)")+
   theme(plot.title=element_text(hjust=0.5, size=15))
   
