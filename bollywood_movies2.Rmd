@@ -1,0 +1,330 @@
+---
+title: "Bollywood Movies"
+output: html_document
+date: "2025-02-20"
+names: Hirva Shah, Ayushee Khatri, Isha Sama
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(naniar)
+library(ggplot2)
+library(RColorBrewer)
+```
+
+
+```{r}
+options(scipen=999) #turning off scientific notation
+```
+
+
+Load Data:
+```{r}
+movies1 <- read_csv("movies1.csv") %>% 
+  clean_names() %>% 
+  mutate(across(where(is.character), tolower)) #changing all characters to lowercase
+```
+
+```{r}
+movies2 <- read_csv("bollywood_hits.csv") %>% 
+  clean_names() %>% 
+  mutate(across(where(is.character), tolower))
+```
+
+Join Data:
+```{r}
+movie_join <- inner_join(movies1, movies2, by="title")
+```
+
+
+
+Cleaning the Data
+```{r}
+bollywood <- movie_join %>% 
+  select(-genre.y, -actors, -directors, -imdb_id) %>% #removing duplicate columns
+  rename(genre=genre.x) %>% 
+  separate(release_date, into=c("date", "month", "year"), sep=" ") %>% #separate the date column
+  replace_with_na_all(condition = ~.x == "n/a") %>% 
+  select(-release_year) #removing duplicate year column
+  
+```
+
+Assessing data:
+
+```{r}
+summary(bollywood)
+```
+
+```{r}
+miss_var_summary(bollywood)
+```
+
+
+
+
+
+##Change Over Time
+
+1. How does the number of movies released change over the years?
+```{r}
+bollywood %>% 
+  filter(year != "NA") %>% 
+  ggplot(aes(x=as.factor(year)))+
+  geom_bar(fill="skyblue", color="black")+
+  labs(title="Movies per Year", x="Year", y="Number Movies")+
+  theme(plot.title = element_text(hjust=0.5, size=15))
+```
+Overall general increase in number of movies
+2011 has highest number of movies and 2006 has the lowest
+
+
+2. Could the drop in movies in 2006 be related to the number of new directors?
+```{r}
+bollywood %>% 
+  filter(new_director=="yes", year!="NA") %>% 
+  group_by(year) %>% 
+  summarize(n_uniq=n_distinct(director))%>% 
+  ggplot(aes(x=as.factor(year), y=n_uniq))+
+  geom_col(fill="skyblue", color="black")+
+  labs(title="New Directors per Year", x="Year", y="Number of New Directors")+
+  theme(plot.title = element_text(hjust=0.5, size=15))
+```
+2006 is the year with the fewest directors entering the field; corresponds to fewest movies released
+2011 is the year with the highest new directors entering the field; corresponds to most movies released
+
+
+3. How does revenue (movie success) change over time?
+```{r}
+bollywood %>% 
+  filter(year != "NA") %>% 
+  group_by(year) %>%
+  summarize(avg_rev=mean(revenue_inr)) %>% 
+  ggplot(aes(x=year, y=avg_rev))+
+  geom_col(fill="skyblue", color="black")+
+  labs(title="Average Revenue over Time", x="Year", y="Average Revenue in Rupees")+
+  theme(plot.title=element_text(hjust=0.5, size=15))
+```
+Average revenue is generally increasing over time but there is a drop from 2009-2011
+
+
+4. How does the distribution of revenue change over time?
+```{r}
+bollywood %>% 
+  filter(year != "NA") %>% 
+  ggplot(aes(x=year, y=revenue_inr))+
+  geom_boxplot(fill="skyblue")+
+  labs(title="Revenue per Year", x="Year", y="Revenue in Rupees")+
+  theme(plot.title=element_text(hjust=0.5, size=15))
+  
+```
+Number of high outliers increase over time
+Outliers are extremely high from 2012-2014
+
+
+5. From 2012-2014, how does the revenue range vary by genre?
+```{r}
+bollywood %>% 
+  filter(year %in% c(2012, 2013, 2014)) %>% 
+  filter(!genre %in% c("adult", "suspense","fantasy")) %>% 
+  ggplot(aes(x=genre, y=revenue_inr/10000, fill=genre))+
+  geom_boxplot()+
+  facet_wrap(~year)+
+  scale_fill_brewer(palette="RdYlGn")+
+  coord_flip()+
+  theme(axis.text.x=element_text(angle=20))+
+  labs(title="Revenue Range over Time", y="Revenue x 10^-3 (Rupees)", x="Genre")
+  
+```
+Masala movies revenue increased significantly across the 3 years
+Range in revenue of action movies increased a lot in 2014
+
+6. How did the number of masala movies change from 2012-2014
+```{r}
+bollywood %>% 
+  filter(year %in% c(2012, 2013, 2014)) %>% 
+  filter(genre=="masala") %>% 
+  group_by(year) %>% 
+  summarize(n_masala=n())
+```
+Only 2 masala movies in 2013 and 2014 but they did really well
+
+7. What were the names of these movies?
+```{r}
+bollywood %>% 
+  filter(year %in% c(2013, 2014)) %>% 
+  filter(genre=="masala") %>% 
+  select(title, lead_star, director, year, revenue_inr)
+```
+
+
+8.  How did the success of the lead actors involved in the masala movies from Q7 change over time?
+```{r}
+bollywood %>% 
+  filter(lead_star=="ajay devgn" | lead_star=="shahrukh khan"| lead_star=="ranveer singh") %>% 
+  group_by(year, lead_star) %>% 
+  summarize(avg_rev=mean(revenue_inr)) %>% 
+  ggplot(aes(x=year, y=avg_rev, group=lead_star, color=lead_star))+
+  geom_point()+
+  geom_line()+
+  labs(title="Avg Movie Revenue Over Time", x="Year", y="Average Revenue", color="Actor")+
+  theme(plot.title=element_text(hjust=0.5, size=15))
+  
+```
+Within 2005-2014:
+ajay devgun and shah rukh khan: their success peaked in 2014
+ranveer singh had just entered the industry in 2013
+
+9. How did the success of the directors involved in the masala movies from Q7 change over time?
+```{r}
+bollywood %>% 
+  filter(director=="sajid khan" | director=="ali abbas zafar"| director=="farah khan" | director=="rohit shetty") %>% 
+  group_by(year, director) %>% 
+  summarize(avg_rev=mean(revenue_inr)) %>% 
+  ggplot(aes(x=year, y=avg_rev, group=director, color=director))+
+  geom_point()+
+  geom_line()+
+  labs(title="Avg Movie Revenue Over Time", x="Year", y="Average Revenue", color="director")+
+  theme(plot.title=element_text(hjust=0.5, size=15))
+  
+```
+
+
+
+#Hits vs. Flops
+
+
+
+
+
+#Old vs. New Bollywood
+
+```{r}
+names(bollywood)
+```
+
+```{r}
+write.table(bollywood, "bollywood.txt", sep = "\t", row.names = FALSE)
+```
+
+
+```{r}
+write.csv(bollywood, "bollywood.csv", row.names = FALSE)
+```
+
+1. How many movies belong to "Old Bollywood" vs "New Bollywood"
+```{r}
+bollywood_era <- bollywood %>% 
+  mutate(bollywood_era = case_when(
+    year >= 2005 & year <= 2009 ~ "Old Bollywood",
+    year >= 2010 & year <= 2014 ~ "New Bollywood",
+    TRUE ~ "Other"
+  )) %>% 
+  group_by(bollywood_era) %>% 
+  summarise(count=n())
+```
+
+
+```{r}
+bollywood_era %>%
+  count(bollywood_era) %>%
+  ggplot(aes(x = bollywood_era, y = n, fill = bollywood_era)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  labs(title = "Number of Movies in Old vs. New Bollywood", x = "Bollywood Era", y = "Number of Movies") +
+  theme_minimal() +
+  scale_fill_manual(values = c("Old Bollywood" = "blue", "New Bollywood" = "red")) +
+  theme(legend.position = "none", text = element_text(size = 12))
+```
+```{r}
+bollywood_eras <- bollywood %>% 
+  mutate(era=case_when(year<=2009 ~"old",
+                       year>2009 ~"new"))
+```
+
+2. How does the average revenue of movies compare between the old and new Bollywood eras?
+```{r}
+bollywood_eras %>%
+  group_by(era) %>% 
+  filter(era!="NA") %>% 
+  ggplot(aes(x = era, y = revenue_inr, fill = era)) +
+  geom_boxplot(outlier.color = "black", outlier.shape = 16) +
+  labs(title = "Revenue Comparison: Old vs. New Bollywood", x = "Bollywood Era", y = "Revenue (INR)") +
+  theme_minimal() +
+  scale_fill_manual(values = c("Old Bollywood" = "blue", "New Bollywood" = "red")) +
+  theme(legend.position = "none", text = element_text(size = 12))
+```
+
+```{r}
+write.csv(bollywood_eras, "bollywood_eras.csv", row.names = FALSE)
+```
+
+```{r}
+revenue_comparison <- bollywood_eras %>%
+    group_by(era) %>%
+    summarise(avg_revenue = mean(revenue_inr, na.rm = TRUE))
+```
+
+```{r}
+filter(eras)
+ggplot(revenue_comparison, aes(x = era, y = avg_revenue, fill = era)) +
+    geom_bar(stat = "identity") +
+    labs(title = "Average Revenue Comparison: Old vs New Bollywood",
+         x = "Era",
+         y = "Average Revenue (INR)") +
+    theme_minimal()
+```
+```{r}
+bollywood_erasclean <- bollywood_eras %>% 
+  filter(!is.na(revenue_inr), !is.na(era))
+```
+
+
+
+<<<<<<< HEAD
+THIS IS GOOD:
+```{r}
+revenue_comparison <- bollywood_erasclean %>%
+    group_by(era) %>%
+    summarise(avg_revenue = mean(revenue_inr, na.rm = TRUE))
+```
+
+```{r}
+ggplot(revenue_comparison, aes(x = era, y = avg_revenue, fill = era)) +
+    geom_bar(stat = "identity", color = "black", width = 0.5) +
+    scale_fill_manual(values = c("old" = "steelblue", "new" = "red")) +
+    labs(title = "Average Revenue Comparison: Old vs. New Bollywood",
+         x = "Era",
+         y = "Average Revenue (INR)") +
+    theme_minimal() +
+    theme(text = element_text(size = 14), legend.position = "none")
+=======
+
+## Shiny App
+
+```{r}
+library(shiny)
+
+ui <- fluidPage(
+  selectInput("y", 
+                "Select Y Variable", 
+                choices = c("hit_flop", "number_of_screens", "revenue_inr", "budget_inr"), 
+                selected = "hit_flop"),
+  
+  plotOutput("plot", width="500px", height="400px")
+)
+
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    
+  })
+  
+}
+
+shinyApp(ui, server)
+>>>>>>> 52caa1433e3cf4aeacb5f86004f34d1c417e06dd
+```
+
