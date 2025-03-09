@@ -276,6 +276,12 @@ write.csv(bollywood_eras, "bollywood_eras.csv", row.names = FALSE)
 
 
 ## Shiny App
+```{r}
+by_genre <- bollywood %>% 
+  group_by(genre) %>% 
+  summarize(mean_revenue=mean(revenue_inr), mean_hit=mean(hit_flop), mean_num_screens=mean(number_of_screens), mean_budget=mean(budget_inr))
+```
+
 
 ```{r}
 library(shiny)
@@ -283,15 +289,18 @@ library(shiny)
 ui <- fluidPage(
   selectInput("y", 
                 "Select Y Variable", 
-                choices = c("hit_flop", "number_of_screens", "revenue_inr", "budget_inr"), 
-                selected = "hit_flop"),
+                choices = c("mean_revenue", "mean_hit", "mean_num_screens", "mean_budget"), 
+                selected = "mean_revenue"),
   
   plotOutput("plot", width="500px", height="400px")
 )
 
 server <- function(input, output, session) {
   output$plot <- renderPlot({
-    
+    by_genre %>%  
+      ggplot(aes_string(x="genre", y=input$y))+
+      geom_col(fill="darkblue")+
+      theme(axis.text.x = element_text(angle = 60))
   })
   
 }
