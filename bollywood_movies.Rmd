@@ -195,7 +195,7 @@ bollywood %>%
   group_by(year, director) %>% 
   summarize(avg_rev=mean(revenue_inr)) %>% 
   ggplot(aes(x=year, y=avg_rev, group=director, color=director))+
-  geom_point()+
+  geom_point(size=2.5)+
   geom_line()+
   labs(title="Movie Revenue Over Time", x="Year", y="Average Revenue (INR)", color="director")+
   theme(plot.title=element_text(hjust=0.5, size=15))
