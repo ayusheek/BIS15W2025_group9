@@ -111,7 +111,7 @@ bollywood %>%
   labs(title="Average Revenue over Time", x="Year", y="Average Revenue in Rupees")+
   theme(plot.title=element_text(hjust=0.5, size=15))
 ```
-Average revenue is generally increasing over time but there is a drop from 2009-2011
+Average revenue is generally increasing over time (growth of bollywood industry)
 
 
 4. How does the distribution of revenue change over time?
@@ -178,13 +178,15 @@ bollywood %>%
   ggplot(aes(x=year, y=avg_rev, group=lead_star, color=lead_star))+
   geom_point()+
   geom_line()+
-  labs(title="Avg Movie Revenue Over Time", x="Year", y="Average Revenue", color="Actor")+
+  labs(title="Movie Revenue Over Time", x="Year", y="Average Revenue (INR)", color="Actor")+
   theme(plot.title=element_text(hjust=0.5, size=15))
   
 ```
 Within 2005-2014:
-ajay devgun and shah rukh khan: their success peaked in 2014
-ranveer singh had just entered the industry in 2013
+Success of movies starring all three were hitting a peak from 2013-2014
+The masala movies from 2013 or 2014 were important successes in these actor's careers
+Ranveer singh is newer to the industry
+
 
 9. How did the success of the directors involved in the masala movies from Q7 change over time?
 ```{r}
@@ -195,10 +197,15 @@ bollywood %>%
   ggplot(aes(x=year, y=avg_rev, group=director, color=director))+
   geom_point()+
   geom_line()+
-  labs(title="Avg Movie Revenue Over Time", x="Year", y="Average Revenue", color="director")+
+  labs(title="Movie Revenue Over Time", x="Year", y="Average Revenue (INR)", color="director")+
   theme(plot.title=element_text(hjust=0.5, size=15))
   
 ```
+2013-2014 were the most successful year for all the directors except Sajid Khan
+Rohit shetty's masala movie was important step in his career
+Farah khan had huge jump from 2010-2014 so the masala movie she produced was also huge step in her career
+
+
 
 
 #Old vs. New Bollywood
