@@ -98,6 +98,7 @@ bollywood %>%
 ```
 2006 is the year with the fewest directors entering the field; corresponds to fewest movies released
 2011 is the year with the highest new directors entering the field; corresponds to most movies released
+Number of new directors could factor into the number of movies released per year
 
 
 3. How does revenue (movie success) change over time?
@@ -118,8 +119,9 @@ Average revenue is generally increasing over time but there is a drop from 2009-
 ```{r}
 bollywood %>% 
   filter(year != "NA") %>% 
-  ggplot(aes(x=year, y=revenue_inr))+
-  geom_boxplot(fill="violet")+
+  ggplot(aes(x=year, y=revenue_inr, fill=year))+
+  geom_boxplot()+
+  scale_fill_brewer(palette="RdYlGn")+_
   labs(title="Revenue per Year", x="Year", y="Revenue (INR)")+
   theme(plot.title=element_text(hjust=0.5, size=15))
   
@@ -128,11 +130,6 @@ Number of high outliers increase over time
 Outliers are extremely high from 2012-2014
 
 
-```{r}
-bollywood %>% 
-  group_by(year) %>% 
-  summarize(med=median(revenue_inr))
-```
 
 
 5. From 2012-2014, how does the revenue range vary by genre?
@@ -152,7 +149,7 @@ bollywood %>%
 Masala movies revenue increased significantly across the 3 years
 Range in revenue of action movies increased a lot in 2014
 
-6. How did the number of masala movies change from 2012-2014
+6. Did the number of masala movies change from 2012-2014?
 ```{r}
 bollywood %>% 
   filter(year %in% c(2012, 2013, 2014)) %>% 
@@ -162,12 +159,13 @@ bollywood %>%
 ```
 Only 2 masala movies in 2013 and 2014 but they did really well
 
-7. What were the names of these movies?
+7. What were the names of these movies? Who were the actors and directors involved?
 ```{r}
 bollywood %>% 
   filter(year %in% c(2013, 2014)) %>% 
   filter(genre=="masala") %>% 
-  select(title, lead_star, director, year, revenue_inr)
+  select(title, lead_star, director, year, revenue_inr) %>% 
+  arrange(year)
 ```
 
 
