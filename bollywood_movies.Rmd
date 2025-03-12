@@ -80,7 +80,6 @@ bollywood %>%
   labs(title="Movies per Year", x="Year", y="Number Movies")+
   theme(plot.title = element_text(hjust=0.5, size=15))
 ```
-Overall general increase in number of movies
 2011 has highest number of movies and 2006 has the lowest
 
 
@@ -124,7 +123,7 @@ bollywood %>%
   labs(title="Revenue per Year", x="Year", y="Revenue (INR)")+
   theme(plot.title=element_text(hjust=0.5, size=15))
 ```
-Number of high outliers increase over time
+Value of high outliers increasing over time
 Outliers are extremely high from 2012-2014
 
 
@@ -135,7 +134,7 @@ Outliers are extremely high from 2012-2014
 ```{r}
 bollywood %>% 
   filter(year %in% c(2012, 2013, 2014)) %>% 
-  filter(!genre %in% c("adult", "suspense","fantasy")) %>% 
+  filter(!genre %in% c("adult", "suspense","fantasy")) %>% #removing some genres that only apply to very few movies with low medians to make graph cleaner
   ggplot(aes(x=genre, y=revenue_inr/10000, fill=genre))+
   geom_boxplot()+
   facet_wrap(~year)+
@@ -145,8 +144,9 @@ bollywood %>%
   labs(title="Revenue Range over Time", y="Revenue x 10^-3 (Rupees)", x="Genre")
   
 ```
-Masala movies revenue increased significantly across the 3 years
-Range in revenue of action movies increased a lot in 2014
+Masala and action movies have higher medians than other genres (these are probably contributing to high outliers from Q4)
+Masala movie boxplot shifted to the right significantly from 2012 to 2013 (increasing success of the movies)
+
 
 6. Did the number of masala movies change from 2012-2014?
 ```{r}
@@ -157,7 +157,8 @@ bollywood %>%
   summarize(n_masala=n())
 ```
 Number of masala movies remained low
-Only 2 masala movies in 2013 and 2014 but they did really well
+Only 2 masala movies in 2013 and 2014 but they did really well according to boxplot from Q5
+
 
 7. What were the names of these movies? Who were the actors and directors involved?
 ```{r}
@@ -182,11 +183,8 @@ bollywood %>%
   theme(plot.title=element_text(hjust=0.5, size=15))
   
 ```
-Within 2005-2014:
-Success of movies starring all three were hitting a peak from 2013-2014
-The masala movies from 2013 or 2014 were important successes in these actor's careers
+Shahrukh khan and ajay devgn show impressive growth over time, reach peak in 2014
 Ranveer singh is newer to the industry
-
 
 9. How did the success of the directors involved in the masala movies from Q7 change over time?
 ```{r}
