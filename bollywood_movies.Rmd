@@ -483,6 +483,125 @@ ggplot(revenue_genre_era, aes(x = genre, y = avg_revenue, fill = genre)) +
 
 #Hits vs. Flops
 
+1. How many hits and flops?
+```{r}
+bollywood <- bollywood %>%
+  mutate(success = case_when(
+    hit_flop.y < 7 ~ "flop", 
+    hit_flop.y >= 7 ~ "hit")) 
+bollywood %>% 
+  group_by(success) %>%
+  summarize(hit_count = n()) %>%
+    ungroup()
+```
+699 hits and 42 flops
+
+2. Compare hits and flops by whether they are remakes or not
+```{r}
+bollywood %>%
+  filter(!is.na(whether_remake)) %>%
+  group_by(whether_remake, success) %>%
+  summarize(count = n(), .groups = "drop")
+
+```
+
+3. How do the number of hit and flop movies compare for remakes versus non-remakes in the Bollywood dataset?
+```{r}
+bollywood %>%
+  filter(!is.na(whether_remake)) %>%
+  group_by(whether_remake, success) %>%
+  summarize(count = n(), .groups = "drop") %>% 
+  ggplot(aes(x=success, y=count, fill=whether_remake))+
+  geom_col()+
+  labs(title="Comparison of Hits and Flops by Whether Remake")
+
+```
+
+4. Compare hits and flops by the type genre. Create the appropriate plot
+```{r}
+genre_summary <- bollywood %>%
+  group_by(genre, hit_flop.x) %>%
+  summarize(count = n(), .groups = "drop")
+
+```
+
+```{r}
+ggplot(genre_summary, aes(x = genre, y = count, fill = hit_flop.x)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Dodge position to show bars side by side
+  labs(
+    title = "Comparison of Hits and Flops by Genre",
+    x = "Genre",
+    y = "Number of Movies",
+    fill = "Hit/Flop Status"
+  ) +
+  theme_minimal() +
+  coord_flip()
+
+```
+
+5.  Compare hits and flops by the following actors: aamir bashir, aasad mirza,abhay deol and abhishek bachchan. Create a table.
+```{r}
+actor_summary <- bollywood %>%
+  filter(lead_star %in% c("aamir bashir", "aasad mirza", "abhay deol", "abhishek bachchan"))%>%
+  group_by(hit_flop.y, lead_star) %>%
+  summarize(count = n(), .groups = "keep") %>% 
+  arrange(desc(count))
+actor_summary
+
+```
+
+
+6.  Does release period relate to the success of hits and failure of flops? Create a table.
+
+```{r}
+bollywood <- bollywood %>%
+  mutate(release_period = as.factor(release_period))
+success_by_period <- bollywood %>%
+  group_by(release_period, hit_flop.x) %>%
+  summarize(count = n(), .groups = "drop")
+success_by_period
+
+```
+
+7. How do the number of hit and flop movies vary for Abhay Deol and Aishwarya Rai in the Bollywood dataset? 
+```{r}
+actor_summary <- bollywood %>%
+  filter(lead_star %in% c("abhay deol", "aishwarya rai")) %>%
+  group_by(hit_flop.y, lead_star) %>%
+  summarize(count = n(), .groups = "keep")
+
+```
+
+```{r}
+ggplot(actor_summary, aes(x = hit_flop.y, y = count, fill = lead_star)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Lead Star", y = "Movie Count", fill = "Lead Star") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+8. 
+
+9. What is the average number of hit and flop movies for each release period among the selected Bollywood lead stars?
+```{r}
+success_by_period <- bollywood %>%
+  filter(lead_star %in% c("aamir bashir", "aasad mirza", "abhay deol", "abhishek bachchan")) %>%
+  group_by(release_period, hit_flop.x) %>%
+  summarize(count = n(), .groups = "drop")
+
+```
+
+```{r}
+average_success_by_period <- success_by_period %>%
+  group_by(release_period) %>%
+  summarize(average_count = mean(count), .groups = "drop")
+average_success_by_period
+```
+
+
+
 
 ## Shiny App
 
