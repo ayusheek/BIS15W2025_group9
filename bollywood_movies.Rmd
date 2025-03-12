@@ -216,7 +216,6 @@ names(bollywood)
 write.table(bollywood, "bollywood.txt", sep = "\t", row.names = FALSE)
 ```
 
-
 ```{r}
 write.csv(bollywood, "bollywood.csv", row.names = FALSE)
 ```
@@ -225,7 +224,6 @@ write.csv(bollywood, "bollywood.csv", row.names = FALSE)
 write.csv(bollywood_eras, "bollywood_eras.csv", row.names = FALSE)
 ```
 
-1. How many movies belong to "Old Bollywood" vs "New Bollywood"
 ```{r}
 bollywood_era <- bollywood %>% 
   mutate(bollywood_era = case_when(
@@ -239,69 +237,10 @@ bollywood_era <- bollywood %>%
 
 
 ```{r}
-bollywood_era %>%
-  count(bollywood_era) %>%
-  ggplot(aes(x = bollywood_era, y = n, fill = bollywood_era)) +
-  geom_bar(stat = "identity", width = 0.5) +
-  labs(title = "Number of Movies in Old vs. New Bollywood", x = "Bollywood Era", y = "Number of Movies") +
-  theme_minimal() +
-  scale_fill_manual(values = c("Old Bollywood" = "blue", "New Bollywood" = "red")) +
-  theme(legend.position = "none", text = element_text(size = 12))
-```
-```{r}
 bollywood_eras <- bollywood %>% 
   mutate(era=case_when(year<=2009 ~"old",
                        year>2009 ~"new"))
 ```
-
-2. How does the average revenue of movies compare between the old and new Bollywood eras?
-
-```{r}
-bollywood_erasclean <- bollywood_eras %>% 
-  filter(!is.na(revenue_inr), !is.na(era))
-```
-
-```{r}
-revenue_comparison <- bollywood_erasclean %>%
-    group_by(era) %>%
-    summarise(avg_revenue = mean(revenue_inr, na.rm = TRUE))
-```
-
-```{r}
-ggplot(revenue_comparison, aes(x = era, y = avg_revenue, fill = era)) +
-    geom_bar(stat = "identity", color = "black", width = 0.5) +
-    scale_fill_manual(values = c("old" = "steelblue", "new" = "red")) +
-    labs(title = "Average Revenue Comparison: Old vs. New Bollywood",
-         x = "Era",
-         y = "Average Revenue (INR)") +
-    theme_minimal() +
-    theme(text = element_text(size = 14), legend.position = "none")
-```
-
-
-
-
-3. What are the most common genres in old and new Bollywood Eras?
-```{r}
-bollywood_erasclean <- bollywood_eras %>% 
-  filter(!is.na(genre), !is.na(era))
-```
-
-```{r}
-genre_count <- bollywood_erasclean %>%
-    group_by(era, genre, .groups='keep') %>%
-    summarise(count = n()) %>%
-    arrange(desc(count))
-```
-
-4. How do hit and flop movies differ in the old and new Bollywood eras?
-```{r}
-bollywood_erasclean <- bollywood_eras %>% 
-  filter(!is.na(hit_flop.x), !is.na(era))
-```
-
-
-
 
 
 1. How does the revenue distribution compare between Old and New Bollywood eras?
@@ -309,10 +248,10 @@ bollywood_erasclean <- bollywood_eras %>%
 bollywood_eras %>%
   filter(!is.na(revenue_inr), !is.na(era)) %>%
   ggplot(aes(x=era, y=revenue_inr, fill=era)) +
-  geom_boxplot(outlier.color="red", outlier.shape=16, alpha=0.7) +
+  geom_boxplot(outlier.color="black", outlier.shape=16, alpha=0.7) +
   theme_minimal() +
-  scale_fill_manual(values=c("#FF5733", "#33FF57")) +
-  labs(title="Revenue Distribution by Era", subtitle="Comparing old and new Bollywood movies",
+  scale_fill_manual(values=c("darkblue", "purple")) +
+  labs(title="Revenue Distribution by Era",
        x="Era", y="Revenue (INR)", fill="Era")
 ```
 
@@ -329,8 +268,8 @@ bollywood_eras %>%
   geom_col(position="dodge") +
   theme_minimal() +
   coord_flip() +
-  scale_fill_manual(values=c("#FF5733", "#33FF57")) +
-  labs(title="Number of Movies per Genre", subtitle="Comparing old and new Bollywood genres",
+  scale_fill_manual(values=c("darkblue", "purple")) +
+  labs(title="Number of Movies per Genre",
        x="Genre", y="Count", fill="Era")
 ```
 This plot illustrates the number of movies per genre for both old and new Bollywood. If certain genres are significantly more popular in one era compared to the other, it could suggest a shift in audience preferences over time. For instance, action films might dominate the newer era, while romance or drama could be more prevalent in older Bollywood.
@@ -343,8 +282,8 @@ bollywood_eras %>%
   ggplot(aes(x=number_of_screens, y=revenue_inr, color=era)) +
   geom_point(size=2, alpha=0.6) +
   theme_minimal() +
-  scale_color_manual(values=c("#FF5733", "#33FF57")) +
-  labs(title="Number of Screens vs Revenue", subtitle="Does wider release mean higher revenue?",
+  scale_color_manual(values=c("darkblue", "purple")) +
+  labs(title="Number of Screens vs Revenue",
        x="Number of Screens", y="Revenue (INR)", color="Era")
 ```
 This graph helps us understand if releasing a movie on more screens leads to higher revenue. If we see an upward trend, it means movies released on more screens generally make more money and vice versa for the downward trend. So the plot basically shows the more places a movie is show, the more money it makes.
@@ -369,10 +308,9 @@ ggplot(top_directors, aes(x = reorder(director, movie_count), y = movie_count, f
   geom_col(alpha = 0.8, show.legend = TRUE) +
   coord_flip() +  
   theme_minimal() +
-  scale_fill_manual(values = c("old" = "#FF5733", "new" = "#33FF57")) +
+  scale_fill_manual(values = c("old" = "darkblue", "new" = "purple")) +
   labs(
-    title = "Top 10 Most Popular Directors in Old and New Bollywood",
-    subtitle = "Based on the number of movies directed",
+    title = "Most Popular Directors in Old and New Bollywood",
     x = "Director",
     y = "Number of Movies",
     fill = "Era"
@@ -390,6 +328,7 @@ new_actor_data <- bollywood_eras %>%
 
 ggplot(new_actor_data, aes(x = era, y = movie_count, fill = new_actor)) +
   geom_col(position = "dodge") +
+  scale_fill_manual(values = c("darkblue", "purple")) +
   theme_minimal() +
   labs(
     title = "Comparison of New Actors Cast in Movies Across Eras",
@@ -400,7 +339,7 @@ ggplot(new_actor_data, aes(x = era, y = movie_count, fill = new_actor)) +
 ```
 There are less new actors in the old era.
 
-6. How did the revenue compare in both eras when Shah Rukh Khan was cast?
+6. How did the revenue compare in both eras when Shahrukh Khan was cast?
 ```{r}
 srk_revenue_data <- bollywood_eras %>%
   filter(lead_star == "shahrukh khan") %>%
@@ -410,9 +349,10 @@ srk_revenue_data <- bollywood_eras %>%
 
 ggplot(srk_revenue_data, aes(x = era, y = avg_revenue, fill = era)) +
   geom_col() +
+  scale_fill_manual(values = c("darkblue", "purple")) +
   theme_minimal() +
   labs(
-    title = "Average Revenue of Movies Starring Shah Rukh Khan Across Eras",
+    title = "Average Revenue of Movies Starring Shahrukh Khan Across Eras",
     x = "Era",
     y = "Average Revenue (INR)"
   )
@@ -428,8 +368,9 @@ genre_popularity_data <- bollywood_eras %>%
 
 ggplot(genre_popularity_data, aes(x = genre, y = movie_count, fill = era)) +
   geom_col() +
-  theme(axis.text.x = element_text(angle = 60))
-  theme_minimal() +
+  scale_fill_manual(values = c("darkblue", "purple")) +
+  theme_minimal() +  
+  theme(axis.text.x = element_text(angle = 60)) +  # Combine themes properly
   labs(
     title = "Most Popular Genre During Holiday Releases Across Eras",
     x = "Genre",
@@ -449,6 +390,7 @@ music_director_hit_flop <- bollywood_eras %>%
 ggplot(music_director_hit_flop, aes(x = reorder(music_director, hit_flop_avg), y = hit_flop_avg, fill = era)) +
   geom_col(position = "dodge") +
   theme_minimal() +
+  scale_fill_manual(values = c("darkblue", "purple")) +
   labs(
     title = "Highest Hit-Flop Average by Music Directors Across Eras",
     x = "Music Director",
@@ -457,15 +399,15 @@ ggplot(music_director_hit_flop, aes(x = reorder(music_director, hit_flop_avg), y
   )
 ```
 
-8. How does the revenue distribution by genre differ between the two eras? (Faceted Plot)
+9. How does the revenue distribution by genre differ between the two eras? (Faceted Plot)
 ```{r}
 revenue_genre_era <- bollywood_eras %>%
   drop_na(genre, revenue_inr, era) %>%
   group_by(era, genre, .groups = 'keep') %>%
   summarise(avg_revenue = mean(revenue_inr))
 
-ggplot(revenue_genre_era, aes(x = genre, y = avg_revenue, fill = genre)) +
-  geom_col() +
+ggplot(revenue_genre_era, aes(x = genre, y = avg_revenue)) +
+  geom_col(fill="purple", color="darkblue") +
   facet_wrap(~era) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
