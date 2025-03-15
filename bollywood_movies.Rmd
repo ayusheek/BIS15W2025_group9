@@ -545,19 +545,34 @@ average_success_by_period
 ## Shiny App
 
 ```{r}
+by_genre <- bollywood %>% 
+  group_by(genre) %>% 
+  summarize(avg_hit = mean(hit_flop), avg_num_screens=mean(number_of_screens), avg_revenue=mean(revenue_inr), avg_budget=mean(budget_inr))
+```
+
+
+```{r}
 library(shiny)
 
-ui <- fluidPage(
+ui <- fluidPage(titlePanel("Bollywood Movies by Genre"),
   selectInput("y", 
                 "Select Y Variable", 
-                choices = c("hit_flop", "number_of_screens", "revenue_inr", "budget_inr"), 
-                selected = "hit_flop"),
+                choices = c("avg_hit", "avg_num_screens", "avg_revenue", "avg_budget"), 
+                selected = "avg_hit"),
   
   plotOutput("plot", width="500px", height="400px")
 )
 
 server <- function(input, output, session) {
   output$plot <- renderPlot({
+    by_genre %>% 
+      ggplot(aes_string(x="genre", y=input$y))+
+      geom_col(fill="skyblue", color="black")+
+      ggtitle(paste(input$y, "by genre"))+
+      theme(axis.text.x=element_text(angle=45, size=10),
+            axis.title.y = element_text(size=12),
+            axis.title.x = element_text(size=12),
+            plot.title=element_text(size=15, hjust=0.5))
     
   })
   
